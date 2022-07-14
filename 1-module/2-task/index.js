@@ -10,15 +10,20 @@ function print(text) {
  * чтобы функция sayHello работала корректно
  */
 function isValid(name) {
-  // ваш код...
+  if (!name) return false;
+  if (name.length < 4 || name.includes(" ")) return false;
+
+  return true;
 }
 
 function sayHello() {
-  let userName = prompt('Введите ваше имя');
+  let userName = prompt("Введите ваше имя");
 
   if (isValid(userName)) {
     print(`Welcome back, ${userName}!`);
   } else {
-    print('Некорректное имя');
+    print("Некорректное имя");
   }
 }
+
+sayHello();
