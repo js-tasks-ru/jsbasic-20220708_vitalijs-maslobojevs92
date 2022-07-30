@@ -9,10 +9,10 @@ function initCarousel() {
   changeButtonState();
 
   carousel.addEventListener("click", function (e) {
-    runSlide(e.target.closest(".carousel__arrow"));
+    runCarousel(e.target.closest(".carousel__arrow"));
   });
 
-  function runSlide(button) {
+  function runCarousel(button) {
     if (button === rightArrowBtn) {
       moveSlide({ direction: "right" });
       changeButtonState();
