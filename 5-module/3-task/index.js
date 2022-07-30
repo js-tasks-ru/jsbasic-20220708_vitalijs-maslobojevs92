@@ -4,7 +4,7 @@ function initCarousel() {
   let rightArrowBtn = carousel.querySelector(".carousel__arrow_right");
   let slidesContainer = carousel.querySelector(".carousel__inner");
   let slideWidth = 0;
-  let slidePos = 0;
+  let slidePos = 1;
 
   changeButtonState();
 
@@ -17,6 +17,7 @@ function initCarousel() {
       moveSlide({ direction: "right" });
       changeButtonState();
     }
+
     if (button === leftArrowBtn) {
       moveSlide({ direction: "left" });
       changeButtonState();
@@ -37,8 +38,8 @@ function initCarousel() {
 
   function changeButtonState() {
     rightArrowBtn.style.display =
-      slidePos == slidesContainer.childElementCount - 1 ? "none" : "";
+      slidePos === slidesContainer.childElementCount ? "none" : "";
 
-    leftArrowBtn.style.display = slidePos == 0 ? "none" : "";
+    leftArrowBtn.style.display = slidePos === 1 ? "none" : "";
   }
 }
