@@ -52,7 +52,7 @@ export default class StepSlider {
       document.onpointermove = (e) => {
         e.preventDefault();
 
-        this._moveThumb(e, 'smooth');
+        this._moveThumb(e);
         this._setStepState();
       };
 
@@ -60,8 +60,8 @@ export default class StepSlider {
         e.preventDefault();
 
         this._slider.classList.remove('slider_dragging');
-        this._moveThumb(e, 'abrupt');
- 
+        this._moveThumb(e);
+
         this._slider.dispatchEvent(new CustomEvent('slider-change', {
           detail: this._value,
           bubbles: true
@@ -77,7 +77,7 @@ export default class StepSlider {
 
       if (e.target.closest('.slider__thumb')) return;
 
-      this._moveThumb(e, 'abrupt');
+      this._moveThumb(e);
       this._setStepState();
 
       this._slider.dispatchEvent(new CustomEvent('slider-change', {
@@ -92,22 +92,18 @@ export default class StepSlider {
       this._sliderSteps.children[this._value].classList.add('slider__step-active');
       this._sliderSteps.children[this._prevValue].classList.remove('slider__step-active');
       this._prevValue = this._value;
-    } else return;
+    }
   }
 
-  //behavior = 'smooth' || 'abrupt';
-  _moveThumb(e, behavior) {
-    let percentProgress;
-
-    if (behavior === 'smooth') percentProgress = this._getPercentProgress(e, behavior);
-    if (behavior === 'abrupt') percentProgress = this._getPercentProgress(e, behavior);
+  _moveThumb(e) {
+    let percentProgress = this._getPercentProgress(e);
 
     this._progressBar.style.width = `${percentProgress}%`;
     this._thumb.style.left = `${percentProgress}%`;
     this._sliderValue.textContent = this._value;
   }
 
-  _getPercentProgress(e, type) {
+  _getPercentProgress(e) {
     let clickCoord = e.clientX - this._slider.getBoundingClientRect().left;
     let clickRelative = clickCoord / this._slider.offsetWidth;
     let segments = this._steps - 1;
@@ -117,8 +113,8 @@ export default class StepSlider {
 
     this._value = Math.round(clickRelative * segments);
 
-    if (type === 'smooth') return clickRelative * 100;
-    if (type === 'abrupt') return this._value / segments * 100;
+    if (e.type == 'pointermove') return clickRelative * 100;
+    else return this._value / segments * 100;
   }
 
   get elem() {
