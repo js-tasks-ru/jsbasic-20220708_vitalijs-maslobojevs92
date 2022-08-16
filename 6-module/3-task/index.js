@@ -1,14 +1,15 @@
 import createElement from '../../assets/lib/create-element.js';
 
 export default class Carousel {
-  _carousel = null;
 
   constructor(slides) {
     this._slides = slides;
+    this._render();
+    this._init();
   }
 
   _render() {
-    const carousel = createElement(`
+    this._carousel = createElement(`
       <div class="carousel">
         <div class="carousel__arrow carousel__arrow_right">
           <img src="/assets/images/icons/angle-icon.svg" alt="icon">
@@ -20,68 +21,11 @@ export default class Carousel {
       </div>
     `);
 
-    let leftArrowBtn = carousel.querySelector(".carousel__arrow_left");
-    let rightArrowBtn = carousel.querySelector(".carousel__arrow_right");
-    let slidesContainer = carousel.querySelector(".carousel__inner");
-    let slideCoords = 0;
-    let slidePos = 0;
-    let timeout = null;
-
-    changeButtonState();
-
-    carousel.addEventListener("click", (e) => {
-      if (e.target.closest(".carousel__button")) {
-        this._createProductAddEvent(carousel, e.target.closest(".carousel__slide"));
-      }
-      
-      runCarousel(e.target.closest(".carousel__arrow"));
-    });
-
-    window.addEventListener("resize", function () {
-      clearTimeout(timeout);
-      timeout = setTimeout(fixSlidePosition, 300);
-    });
-
-    return carousel;
-
-    function runCarousel(button) {
-      if (button === rightArrowBtn) {
-        moveSlide({ direction: "right" });
-        changeButtonState();
-      }
-
-      if (button === leftArrowBtn) {
-        moveSlide({ direction: "left" });
-        changeButtonState();
-      }
-    }
-
-    function moveSlide({ direction }) {
-      if (direction === "right") {
-        slidePos++;
-        slideCoords = slidePos * slidesContainer.offsetWidth;
-        slidesContainer.style.transform = `translateX(${-slideCoords}px)`;
-      } else {
-        slidePos--;
-        slideCoords = slidePos * slidesContainer.offsetWidth;
-        slidesContainer.style.transform = `translateX(${-slideCoords}px)`;
-      }
-    }
-        
-    function changeButtonState() {
-      rightArrowBtn.style.display =
-        slidePos === slidesContainer.childElementCount - 1 ? "none" : "";
-      leftArrowBtn.style.display = slidePos === 0 ? "none" : "";
-    }
-
-    function fixSlidePosition() {
-      slideCoords = slidePos * slidesContainer.offsetWidth;
-      slidesContainer.style.transform = `translateX(${-slideCoords}px)`;
-    }
+    return this._carousel;
 
     function createSlides() {
       let result = '';
-      
+
       for (let slide of this._slides) {
         let layout = `
           <div class="carousel__slide" data-id="${slide.id}">
@@ -98,23 +42,75 @@ export default class Carousel {
 
         result += layout;
       }
-      
+
       return result;
     }
   }
 
-  _createProductAddEvent(element, slide) {
-    let event = new CustomEvent("product-add", { 
-      detail: slide.dataset.id, 
-      bubbles: true
+  _init() {
+    this._leftArrowBtn = this._carousel.querySelector(".carousel__arrow_left");
+    this._rightArrowBtn = this._carousel.querySelector(".carousel__arrow_right");
+    this._slidesContainer = this._carousel.querySelector(".carousel__inner");
+    this._slideCoords = 0;
+    this._slidePos = 0;
+    let timeout = null;
+
+    this._changeButtonState();
+
+    this._carousel.addEventListener("click", (e) => {
+      if (e.target.closest(".carousel__button")) {
+        let slide = e.target.closest(".carousel__slide");
+
+        this._carousel.dispatchEvent(new CustomEvent("product-add", { 
+          detail: slide.dataset.id,
+          bubbles: true
+        }));
+      }
+
+      this._runCarousel(e.target.closest(".carousel__arrow"));
     });
 
-    element.dispatchEvent(event);
+    window.addEventListener("resize", () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(this._fixSlidePosition.bind(this), 300);
+    });
   }
 
+  _runCarousel(button) {
+    if (button === this._rightArrowBtn) {
+      this._moveSlide({ direction: "right" });
+      this._changeButtonState();
+    }
+
+    if (button === this._leftArrowBtn) {
+      this._moveSlide({ direction: "left" });
+      this._changeButtonState();
+    }
+  }
+
+  _moveSlide({ direction }) {
+    if (direction === "right") {
+      this._slidePos++;
+      this._slideCoords = this._slidePos * this._slidesContainer.offsetWidth;
+      this._slidesContainer.style.transform = `translateX(${-this._slideCoords}px)`;
+    } else {
+      this._slidePos--;
+      this._slideCoords = this._slidePos * this._slidesContainer.offsetWidth;
+      this._slidesContainer.style.transform = `translateX(${-this._slideCoords}px)`;
+    }
+  }
+
+  _changeButtonState() {
+    this._rightArrowBtn.style.display = this._slidePos === this._slidesContainer.childElementCount - 1 ? "none" : "";
+    this._leftArrowBtn.style.display = this._slidePos === 0 ? "none" : "";
+  }
+
+  _fixSlidePosition() {
+    this._slideCoords = this._slidePos * this._slidesContainer.offsetWidth;
+    this._slidesContainer.style.transform = `translateX(${-this._slideCoords}px)`;
+  }
+  
   get elem() {
-    if (!this._carousel) this._carousel = this._render();
     return this._carousel;
   }
-
 }
