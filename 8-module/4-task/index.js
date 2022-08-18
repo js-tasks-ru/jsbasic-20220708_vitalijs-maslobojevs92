@@ -170,14 +170,14 @@ export default class Cart {
     let modalBodyContent = this.modal.modal.querySelector('.modal__body').firstElementChild;
     let form = modalBodyContent.querySelector('.cart-form');
     let button = form.querySelector('[type="submit"]');
-    let formData = new FormData(form);
 
     button.classList.add('is-loading');
 
     fetch('https://httpbin.org/post', {
       method: 'POST',
-      body: formData
-    }).then(response => {
+      body: new FormData(form)
+    })
+    .then(response => {
       if (response.status == 200) {
         this.modal.setTitle('Success!');
         this.cartItems = [];
@@ -192,6 +192,8 @@ export default class Cart {
             </p>
           </div>
         `));
+
+        this.cartIcon.update(this);
       }
     });
   }
