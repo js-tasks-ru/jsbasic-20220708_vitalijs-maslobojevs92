@@ -4,39 +4,36 @@ export default class Cart {
   constructor(cartIcon) {
     this.cartIcon = cartIcon;
   }
-
+  
   addProduct(product) {
     if (!product) return;
- 
-    if (this.isEmpty()) {
-      this.onProductUpdate(this.cartItems.push({product, count: 1}));
-      return;
-    }
+
+    let item = { product, count: 1 };
 
     for (let item of this.cartItems) {
       if (item.product.id == product.id) {
         item.count++;
         this.onProductUpdate(item);
+
         return;
       }
     }
 
-    this.onProductUpdate(this.cartItems.push({product, count: 1}));
+    this.cartItems.push(item);
+    this.onProductUpdate(item);
   }
 
   updateProductCount(productId, amount) {
-    this.cartItems = this.cartItems.filter((item) => {
+    this.cartItems.forEach((item, index) => {
       if (item.product.id == productId) {
         item.count += amount;
-        this.onProductUpdate(item);
 
         if (item.count == 0) {
-          return false;
+          this.cartItems.splice(index, 1);
         }
+        
+        this.onProductUpdate(item);
       }
-      
-      this.onProductUpdate(item);
-      return true;
     });
   }
 
