@@ -21,8 +21,6 @@ export default class CartIcon {
           <span class="cart-icon__price">€${cart.getTotalPrice().toFixed(2)}</span>
         </div>`;
 
-      this.initialTopCoord = this.elem.getBoundingClientRect().top + window.pageYOffset;
-
       this.updatePosition();
 
       this.elem.classList.add('shake');
@@ -41,6 +39,8 @@ export default class CartIcon {
   }
 
   updatePosition() {
+    if (!this.initialTopCoord) this.initialTopCoord = this.elem.getBoundingClientRect().top + window.pageYOffset;
+
     if (!this.elem.offsetWidth) return;
 
     if (document.documentElement.clientWidth <= 767) {

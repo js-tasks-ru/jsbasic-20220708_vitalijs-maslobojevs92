@@ -69,6 +69,7 @@ export default class RibbonMenu {
 
   _setActiveItem(menuItem) {
     menuItem.classList.add("ribbon__item_active");
+    this.productId = menuItem.dataset.id;
 
     if (menuItem == this._activeMenuItem) return;
 
